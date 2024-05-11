@@ -66,6 +66,7 @@ intellij {
 
 patchPluginXml {
     sinceBuild = sinceBuildVersion
+    untilBuild = untilBuildVersion
 }
 
 tasks.buildSearchableOptions {

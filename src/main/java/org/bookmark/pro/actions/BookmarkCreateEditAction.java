@@ -39,78 +39,8 @@ public class BookmarkCreateEditAction extends AnAction {
         CaretModel caretModel = editor.getCaretModel();
         // 获取添加标记的行号
         int markLine = caretModel.getLogicalPosition().line;
-        BookmarkTreeNode treeNode = BookmarkRunService.getDocumentService(project).getBookmarkNode(project, file, markLine);
-        if (treeNode != null) {
-            updateOneBookmark(project, editor, treeNode, markLine);
-        } else {
-            // 创建书签操作
-            createOneBookmark(project, editor, file, caretModel, markLine);
-        }
-    }
-
-    /**
-     * 更新一个书签
-     *
-     * @param project  项目
-     * @param editor   编辑器
-     * @param treeNode 树节点
-     * @param markLine 标记行
-     */
-    private void updateOneBookmark(Project project, Editor editor, BookmarkTreeNode treeNode, int markLine) {
-        // 添加标记行的内容
-        String markLineContent = BookmarkProUtil.getAutoDescription(editor, markLine);
-        // 原书签信息
-        BookmarkNodeModel nodeModel = (BookmarkNodeModel) treeNode.getUserObject();
-        // 书签管理器
-        BookmarkTreeManage bookmarkManage = BookmarkRunService.getBookmarkManage(project);
-        // 本行内容的MD5值
-        String contentMd5 = SignatureUtil.getMd5Digest(markLineContent);
-        // 书签可以添加的最大行号
-        int maxLineNum = getMaxLine(editor);
-        if (contentMd5.equals(nodeModel.getMarkLineMd5())) {
-            new BookmarkEditDialog(project, false).defaultNode(nodeModel, maxLineNum).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
-                nodeModel.setName(name);
-                nodeModel.setInvalid(false);
-                if (lineNum != markLine) {
-                    // 再书签操作页更新过标记行，重新获取
-                    String markContent = BookmarkProUtil.getAutoDescription(editor, lineNum);
-                    nodeModel.setMarkLineMd5(SignatureUtil.getMd5Digest(markContent));
-                    nodeModel.setLine(lineNum);
-                }
-                nodeModel.setInvalid(false);
-                nodeModel.setGroup(enableGroup);
-                nodeModel.setBookmark(true);
-                treeNode.setGroup(enableGroup);
-                treeNode.setBookmark(true);
-                nodeModel.setDesc(desc);
-                bookmarkManage.changeBookmarkNode(parentNode, treeNode);
-            });
-        } else {
-            // 不一致 置为失效书签
-            treeNode.setInvalid(true);
-            nodeModel.setInvalid(true);
-            bookmarkManage.changeBookmarkNode(null, treeNode);
-            // 更新书签操作
-            new BookmarkEditDialog(project, false).defaultNode(nodeModel, maxLineNum).defaultWarning(BookmarkProIcon.INVALID_SIGN).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
-                nodeModel.setName(name);
-                nodeModel.setDesc(desc);
-                if (lineNum != markLine) {
-                    // 再书签操作页更新过标记行，重新获取
-                    String markContent = BookmarkProUtil.getAutoDescription(editor, lineNum);
-                    nodeModel.setMarkLineMd5(SignatureUtil.getMd5Digest(markContent));
-                    nodeModel.setLine(lineNum);
-                } else {
-                    nodeModel.setMarkLineMd5(contentMd5);
-                }
-                nodeModel.setInvalid(false);
-                nodeModel.setGroup(enableGroup);
-                nodeModel.setBookmark(true);
-                treeNode.setGroup(enableGroup);
-                treeNode.setBookmark(true);
-                treeNode.setInvalid(false);
-                bookmarkManage.changeBookmarkNode(parentNode, treeNode);
-            });
-        }
+        // 创建书签操作
+        createOneBookmark(project, editor, file, caretModel, markLine);
     }
 
     /**

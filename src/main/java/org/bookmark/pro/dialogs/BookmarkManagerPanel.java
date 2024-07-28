@@ -161,7 +161,7 @@ public class BookmarkManagerPanel extends JPanel {
                 private void persistenceSave() {
                     new SwingWorker<Void, Void>() {
                         @Override
-                        protected Void doInBackground() throws Exception {
+                        protected Void doInBackground() {
                             BookmarkRunService.getPersistenceService(project).saveBookmark(project);
                             return null;
                         }

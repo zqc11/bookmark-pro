@@ -65,7 +65,7 @@
         <group id="org.intellij.sdk.action.GroupedActions" text="_Bookmark-Pro" popup="true">
             <!-- 编辑窗口右键菜单:  -->
             <add-to-group group-id="GoToMenu" anchor="after" relative-to-action="bookmark.pro.key.menu.create"/>
-            <!-- 创建|编辑书签 -->
+            <!-- 创建书签 -->
             <action id="bookmark.pro.key.menu.create" class="org.bookmark.pro.actions.BookmarkCreateEditAction" text="Add Bookmark Line">
                 <!-- 添加快捷键 -->
                 <keyboard-shortcut first-keystroke="shift alt a" keymap="$default"/>

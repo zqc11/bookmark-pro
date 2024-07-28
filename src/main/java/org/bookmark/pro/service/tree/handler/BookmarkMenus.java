@@ -1,15 +1,26 @@
 package org.bookmark.pro.service.tree.handler;
 
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.bookmark.pro.constants.BookmarkProIcon;
 import org.bookmark.pro.context.BookmarkRunService;
+import org.bookmark.pro.dialogs.modify.BookmarkEditDialog;
 import org.bookmark.pro.domain.model.BookmarkNodeModel;
 import org.bookmark.pro.domain.model.GroupNodeModel;
+import org.bookmark.pro.service.tree.BookmarkTreeManage;
 import org.bookmark.pro.utils.BookmarkNoticeUtil;
+import org.bookmark.pro.utils.BookmarkProUtil;
 import org.bookmark.pro.utils.CharacterUtil;
+import org.bookmark.pro.utils.SignatureUtil;
 import org.jsoup.internal.StringUtil;
 
 import javax.swing.*;
@@ -37,9 +48,8 @@ class BookmarkMenus {
      * @param bookmarkTree
      */
     protected void addTreeMenus(Project project, BookmarkTree bookmarkTree) {
-        JBPopupMenu addGroupMenu = createGroupMenu(bookmarkTree);
+        JBPopupMenu addGroupMenu = createGroupMenu(project, bookmarkTree);
         JBPopupMenu treeMenus = createTreeMenus(project, bookmarkTree);
-        JBPopupMenu deleteMenus = createDeleteMenus(project, bookmarkTree);
 
         bookmarkTree.addMouseListener(new MouseAdapter() {
             @Override
@@ -63,14 +73,8 @@ class BookmarkMenus {
                     if (Objects.isNull(path)) {
                         return;
                     }
-                    BookmarkTreeNode selectedNode = (BookmarkTreeNode) path.getLastPathComponent();
-                    if (selectedNode.isGroup()) {
-                        // 分组上点击操作显示全部菜单
-                        treeMenus.show(bookmarkTree, e.getX() + 16, e.getY());
-                    } else {
-                        /// 书签上点击操作 只显示删除菜单
-                        deleteMenus.show(bookmarkTree, e.getX() + 16, e.getY());
-                    }
+                    // 分组上点击操作显示全部菜单
+                    treeMenus.show(bookmarkTree, e.getX() + 16, e.getY());
                 }
             }
         });
@@ -88,7 +92,7 @@ class BookmarkMenus {
         popupMenu.add(createEditMenu(project, bookmarkTree));
         popupMenu.add(createDeleteMenu(project, bookmarkTree));
         popupMenu.add(new JPopupMenu.Separator());
-        popupMenu.add(addGroupMenu(bookmarkTree));
+        popupMenu.add(addGroupMenu(project, bookmarkTree));
         return popupMenu;
     }
 
@@ -98,12 +102,12 @@ class BookmarkMenus {
      * @param bookmarkTree 书签树
      * @return {@link JBPopupMenu}
      */
-    private JBPopupMenu createGroupMenu(final BookmarkTree bookmarkTree) {
+    private JBPopupMenu createGroupMenu(final Project project, final BookmarkTree bookmarkTree) {
         JBPopupMenu popupMenuRoot = new JBPopupMenu();
         JBMenuItem imAddGroupRoot = new JBMenuItem("Add Group");
         popupMenuRoot.add(imAddGroupRoot);
         // 增加书签分组
-        addActionListener(imAddGroupRoot, bookmarkTree);
+        addActionListener(imAddGroupRoot, bookmarkTree, project);
         return popupMenuRoot;
     }
 
@@ -113,24 +117,11 @@ class BookmarkMenus {
      * @param bookmarkTree 书签树
      * @return {@link JBMenuItem}
      */
-    private JBMenuItem addGroupMenu(final BookmarkTree bookmarkTree) {
+    private JBMenuItem addGroupMenu(final Project project, final BookmarkTree bookmarkTree) {
         JBMenuItem addGroupMenu = new JBMenuItem("AddGroup");
         // 增加书签分组
-        addActionListener(addGroupMenu, bookmarkTree);
+        addActionListener(addGroupMenu, bookmarkTree, project);
         return addGroupMenu;
-    }
-
-    /**
-     * 创建删除菜单
-     *
-     * @param project      项目
-     * @param bookmarkTree 书签树
-     * @return {@link JBPopupMenu}
-     */
-    private JBPopupMenu createDeleteMenus(final Project project, final BookmarkTree bookmarkTree) {
-        JBPopupMenu popupMenu = new JBPopupMenu();
-        popupMenu.add(createDeleteMenu(project, bookmarkTree));
-        return popupMenu;
     }
 
     /**
@@ -149,48 +140,82 @@ class BookmarkMenus {
                 return;
             }
             BookmarkTreeNode selectedNode = (BookmarkTreeNode) path.getLastPathComponent();
-            if (selectedNode.isGroup()) {
-                if (selectedNode.isBookmark()) {
-                    // 修改书签分组
-                    BookmarkNodeModel nodeModel = (BookmarkNodeModel) selectedNode.getUserObject();
-                    // 校验规则
-                    InputValidatorEx validatorEx = inputString -> {
-                        if (StringUtil.isBlank(inputString)) return "Group name is not empty";
-                        return null;
-                    };
-                    String groupName = Messages.showInputDialog("name:", "EditGroup", null, nodeModel.getName(), validatorEx);
-                    if (StringUtil.isBlank(groupName)) {
-                        return;
-                    }
-                    if (!groupName.equals(nodeModel.getName())) {
-                        nodeModel.setName(groupName);
-                    }
-                    BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(selectedNode);
-                } else {
-                    // 修改书签分组
-                    GroupNodeModel nodeModel = (GroupNodeModel) selectedNode.getUserObject();
-                    // 校验规则
-                    InputValidatorEx validatorEx = inputString -> {
-                        if (StringUtil.isBlank(inputString)) return "Group name is not empty";
-                        return null;
-                    };
-                    String groupName = Messages.showInputDialog("name:", "EditGroup", null, nodeModel.getName(), validatorEx);
-                    if (StringUtil.isBlank(groupName)) {
-                        return;
-                    }
-                    if (CharacterUtil.isEmpty(nodeModel.getUuid())) {
-                        nodeModel.setUuid(UUID.randomUUID().toString());
-                    }
-                    if (!groupName.equals(nodeModel.getName())) {
-                        nodeModel.setName(groupName);
-                    }
-                    BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(selectedNode);
+            if (selectedNode.isGroup() && !selectedNode.isBookmark()) {
+                // 修改书签分组
+                GroupNodeModel nodeModel = (GroupNodeModel) selectedNode.getUserObject();
+                // 校验规则
+                InputValidatorEx validatorEx = inputString -> {
+                    if (StringUtil.isBlank(inputString)) return "Group name is not empty";
+                    return null;
+                };
+                String groupName = Messages.showInputDialog("name:", "EditGroup", null, nodeModel.getName(), validatorEx);
+                if (StringUtil.isBlank(groupName)) {
+                    return;
                 }
+                if (CharacterUtil.isEmpty(nodeModel.getUuid())) {
+                    nodeModel.setUuid(UUID.randomUUID().toString());
+                }
+                if (!groupName.equals(nodeModel.getName())) {
+                    nodeModel.setName(groupName);
+                }
+                BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(selectedNode);
             } else {
-                BookmarkNoticeUtil.errorMessages(project, "Please in the editor modify bookmark.");
+                BookmarkNodeModel model = (BookmarkNodeModel) selectedNode.getUserObject();
+                model.openFileDescriptor(project);
+                Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+                if (editor == null) return;
+                CaretModel caretModel = editor.getCaretModel();
+                // 获取添加标记的行号
+                int markLine = caretModel.getLogicalPosition().line;
+                updateOneBookmark(project, editor, selectedNode, markLine);
             }
         });
         return editMenu;
+    }
+
+    /**
+     * 更新一个书签
+     *
+     * @param project  项目
+     * @param editor   编辑器
+     * @param treeNode 树节点
+     * @param markLine 标记行
+     */
+    private void updateOneBookmark(Project project, Editor editor, BookmarkTreeNode treeNode, int markLine) {
+        // 原书签信息
+        BookmarkNodeModel nodeModel = (BookmarkNodeModel) treeNode.getUserObject();
+        // 书签管理器
+        BookmarkTreeManage bookmarkManage = BookmarkRunService.getBookmarkManage(project);
+        // 书签可以添加的最大行号
+        int maxLineNum = getMaxLine(editor);
+        new BookmarkEditDialog(project, false).defaultNode(nodeModel, maxLineNum).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
+            nodeModel.setName(name);
+            nodeModel.setInvalid(false);
+            if (lineNum != markLine) {
+                // 再书签操作页更新过标记行，重新获取
+                String markContent = BookmarkProUtil.getAutoDescription(editor, lineNum);
+                nodeModel.setMarkLineMd5(SignatureUtil.getMd5Digest(markContent));
+                nodeModel.setLine(lineNum);
+            }
+            nodeModel.setInvalid(false);
+            nodeModel.setGroup(enableGroup);
+            nodeModel.setBookmark(true);
+            treeNode.setGroup(enableGroup);
+            treeNode.setBookmark(true);
+            nodeModel.setDesc(desc);
+            bookmarkManage.changeBookmarkNode(parentNode, treeNode);
+        });
+    }
+
+    /**
+     * 获取最大行号
+     *
+     * @param editor 编辑器
+     * @return int
+     */
+    private int getMaxLine(Editor editor) {
+        Document document = editor.getDocument();
+        return document.getLineCount();
     }
 
     /**
@@ -231,7 +256,7 @@ class BookmarkMenus {
      * @param item         项目
      * @param bookmarkTree 书签树
      */
-    private void addActionListener(JBMenuItem item, final BookmarkTree bookmarkTree) {
+    private void addActionListener(JBMenuItem item, final BookmarkTree bookmarkTree, final Project project) {
         item.addActionListener(e -> {
             // 获取选定的节点
             BookmarkTreeNode selectedNode = (BookmarkTreeNode) bookmarkTree.getLastSelectedPathComponent();
@@ -260,6 +285,7 @@ class BookmarkMenus {
             // 新的分组节点
             BookmarkTreeNode groupNode = new BookmarkTreeNode(new GroupNodeModel(groupName, UUID.randomUUID().toString()), true);
             bookmarkTree.getDefaultModel().insertNodeInto(groupNode, parent, 0);
+            BookmarkRunService.getDocumentService(project).addBookmarkNode(project, groupNode);
         });
     }
 }

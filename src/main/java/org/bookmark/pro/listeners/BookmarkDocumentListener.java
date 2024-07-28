@@ -109,11 +109,7 @@ public class BookmarkDocumentListener implements DocumentListener {
                 // 移除缓存的旧书签
                 BookmarkRunService.getDocumentService(project).removeBookmarkNode(project, node);
                 nodeModel.setLine(bookmarkPositionLine + rowGap);
-                nodeModel.setVirtualFile(virtualFile);
                 // 添加新书签
-                BookmarkRunService.getDocumentService(project).addBookmarkNode(project, node);
-                node.setUserObject(nodeModel);
-                BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(node);
             } else {
                 if (bookmarkPositionLine <= changeLine) {
                     continue;
@@ -128,12 +124,12 @@ public class BookmarkDocumentListener implements DocumentListener {
                     continue;
                 }
                 nodeModel.setLine(bookmarkPositionLine - rowGap);
-                nodeModel.setVirtualFile(virtualFile);
                 // 添加新书签
-                BookmarkRunService.getDocumentService(project).addBookmarkNode(project, node);
-                node.setUserObject(nodeModel);
-                BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(node);
             }
+            nodeModel.setVirtualFile(virtualFile);
+            BookmarkRunService.getDocumentService(project).addBookmarkNode(project, node);
+            node.setUserObject(nodeModel);
+            BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(node);
             BookmarkRunService.getPersistenceService(project).saveBookmark(project);
         }
     }

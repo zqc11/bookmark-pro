@@ -25,6 +25,7 @@ public class BookmarkSettingForm implements Configurable {
     private JSpinner maxCharNum;
     private JCheckBox lineDocument;
     private JSpinner selectedShowNum;
+    private JTextField sjzBeiFen;
 
     private JButton backupButton;
     private JTextField backUpPath;
@@ -42,7 +43,7 @@ public class BookmarkSettingForm implements Configurable {
     @Override
     public @Nullable JComponent createComponent() {
         // 初始化全局设置
-        generalSettings = new GeneralSettings(markText, markLabSel, noteLabSel, separatorSel, maxCharNum, lineDocument, selectedShowNum);
+        generalSettings = new GeneralSettings(markText, markLabSel, noteLabSel, separatorSel, maxCharNum, lineDocument, selectedShowNum,sjzBeiFen);
         generalSettings.initGeneralSettings();
         backupSetting = new BackupSetting(mainPane, backupButton, backUpPath, autoBackup, backUpTime);
         backupSetting.initBackupSettings();

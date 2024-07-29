@@ -139,6 +139,32 @@ public class BookmarkManagerPanel extends JPanel {
     }
 
     /**
+     * 重新加载书签树----添加搜索功能
+     *
+     * @param project      项目
+     * @param bookmarkTree 书签树
+     */
+    public void reloadBookmarkTreeSearch(Project project, BookmarkTree bookmarkTree,String searchText) {
+        new SjzTreeLoadWork(project, bookmarkTree,searchText).execute();
+    }
+
+    /**
+     * 展开所有节点
+     *
+     * @param tree 书签树
+     * @param start 起始行
+     * @param rowCount 行数
+     */
+    private void expandAllNodes(JTree tree, int start, int rowCount) {
+        for (int i = start; i < rowCount; ++i) {
+            tree.expandRow(i);
+        }
+        if (tree.getRowCount() != rowCount) {
+            expandAllNodes(tree, rowCount, tree.getRowCount());
+        }
+    }
+
+    /**
      * 添加一个书签
      *
      * @param project

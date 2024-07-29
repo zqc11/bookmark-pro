@@ -74,7 +74,7 @@ public class BookmarkCreateEditAction extends AnAction {
         bookmarkModel.setName(file.getName());
 
         // 新建书签窗口
-        new BookmarkEditDialog(project, true).defaultNode(bookmarkModel, getMaxLine(editor)).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
+        new BookmarkEditDialog(project, true).defaultNode(bookmarkModel, getMaxLine(editor), true).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
             if (lineNum != markLine) {
                 // 再书签操作页更新过标记行，重新获取
                 String markContent = BookmarkProUtil.getAutoDescription(editor, lineNum);

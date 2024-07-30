@@ -25,7 +25,6 @@ public class BookmarkTree extends Tree {
 
     protected void setDefaultModel(DefaultTreeModel model, BookmarkGroupNavigator groupNavigator) {
         this.groupNavigator = groupNavigator;
-        this.model = model;
         setModel(model);
     }
 

@@ -86,16 +86,15 @@ public class BookmarkManagerPanel extends JPanel {
      */
     public void addOneBookmark(Project project, BookmarkTreeNode parentNode, BookmarkNodeModel bookmarkModel) {
         // 一次都没有创建过项目
-        if (BookmarkRunService.getBookmarkManagerPanel(project) == null) {
+        if (BookmarkRunService.getBookmarkManagerPanel(project) == null || !treeLoaded) {
             BookmarkPro bookmark = BookmarkConverter.modelToBean(bookmarkModel);
             // 获取持久化书签对象
             BookmarkRunService.getPersistenceService(project).addOneBookmark(project, bookmark);
+            BookmarkTree bookmarkTree = BookmarkRunService.getBookmarkManage(project).getBookmarkTree();
+            BookmarkRunService.getBookmarkManagerPanel(project).reloadBookmarkTree(project, bookmarkTree);
             return;
         }
-        // 添加书签
-        if (!treeLoaded) {
-            return;
-        }
+
         BookmarkTreeNode treeNode = new BookmarkTreeNode(bookmarkModel, true);
         if (parentNode == null) {
             // 书签管理窗口添加书签
@@ -105,8 +104,6 @@ public class BookmarkManagerPanel extends JPanel {
             BookmarkRunService.getBookmarkManage(project).addBookmarkNode(parentNode, treeNode);
         }
         bookmarkModel.setIndex(treeNode.getParent().getIndex(treeNode));
-        // 添加书签到缓存
-        BookmarkRunService.getDocumentService(project).addBookmarkNode(project, treeNode);
     }
 
     public class TreeLoadWorker extends SwingWorker<DefaultTreeModel, Void> {
@@ -119,7 +116,7 @@ public class BookmarkManagerPanel extends JPanel {
         }
 
         @Override
-        protected DefaultTreeModel doInBackground() throws Exception {
+        protected DefaultTreeModel doInBackground() {
             PersistenceService service = BookmarkRunService.getPersistenceService(openProject);
             // 获取持久化书签对象
             return new DefaultTreeModel(service.getBookmarkNode(openProject));

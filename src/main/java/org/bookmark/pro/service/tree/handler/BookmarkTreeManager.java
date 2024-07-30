@@ -66,11 +66,9 @@ public final class BookmarkTreeManager extends BookmarkMenus implements Bookmark
 
     @Override
     public void addBookmarkNode(BookmarkTreeNode node) {
-        this.groupNavigator.setActivatedBookmark(node);
         // 获取父节点
         BookmarkTreeNode parent = this.groupNavigator.ensureActivatedGroup();
-        // 父节点添加书签节点
-        this.bookmarkTree.addNode(this.project, parent, node);
+        addBookmarkNode(parent, node);
     }
 
     @Override

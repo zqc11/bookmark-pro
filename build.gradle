@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'org.bookmark.pro'
-version '223-241'
+version '221-241'
 
 repositories {
     maven { url 'https://maven.aliyun.com/repository/public/' }

@@ -25,7 +25,8 @@ public class BackupScheduler implements BaseExportService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        scheduler.scheduleAtFixedRate(this::performBackupForAllProjects, 0, backupInterval, TimeUnit.HOURS);
+        // 设置初始延迟时间为备份间隔时间
+        scheduler.scheduleAtFixedRate(this::performBackupForAllProjects, backupInterval, backupInterval, TimeUnit.HOURS);
     }
 
     private void performBackupForAllProjects() {
@@ -43,5 +44,27 @@ public class BackupScheduler implements BaseExportService {
             String fileName = project.getName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HHmmss")) + ".json";
             BookmarkRunService.getPersistenceService(project).exportBookmark(project, autoBackupFile.getPath() + File.separator + fileName);
         }
+    }
+
+    /**
+     * 发送导出通知
+     *
+     * @param project    项目
+     * @param projectDir 项目根目录
+     */
+    private void sendExportNotice(Project project, String projectDir) {
+        AnAction openExportFile = new NotificationAction(BookmarkProIcon.EYE_SIGN + "ViewFile") {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
+                try {
+                    Desktop desktop = Desktop.getDesktop();
+                    desktop.open(new File(projectDir));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+
+        BookmarkNoticeUtil.projectNotice(project, String.format("Export bookmark success. Output file directory: [%s]", projectDir), openExportFile);
     }
 }

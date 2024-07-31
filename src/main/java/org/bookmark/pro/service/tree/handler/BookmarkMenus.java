@@ -188,7 +188,7 @@ class BookmarkMenus {
         BookmarkTreeManage bookmarkManage = BookmarkRunService.getBookmarkManage(project);
         // 书签可以添加的最大行号
         int maxLineNum = getMaxLine(editor);
-        new BookmarkEditDialog(project, false).defaultNode(nodeModel, maxLineNum).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
+        new BookmarkEditDialog(project, false).defaultNode(nodeModel, maxLineNum, true).showAndCallback((name, desc, lineNum, parentNode, enableGroup) -> {
             nodeModel.setName(name);
             nodeModel.setInvalid(false);
             if (lineNum != markLine) {

@@ -28,6 +28,7 @@ import java.util.UUID;
  * @date 2024/03/21
  */
 public class BookmarkCreateEditAction extends AnAction {
+    @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         Editor editor = e.getData(CommonDataKeys.EDITOR);

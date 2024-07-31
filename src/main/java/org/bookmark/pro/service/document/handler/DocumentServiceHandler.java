@@ -56,14 +56,6 @@ public final class DocumentServiceHandler implements DocumentService {
     }
 
     @Override
-    public BookmarkTreeNode delBookMarkGroup(String uuid) {
-        if (uuid!=null && !"".equals(uuid)) {
-            this.groupNodeCache.remove(uuid);
-        }
-        return null;
-    }
-
-    @Override
     public Set<BookmarkTreeNode> getBookmarkNodes(Project project, VirtualFile virtualFile) {
         String fileCanonicalPath = BookmarkProUtil.virtualFileName(project, virtualFile);
         return Optional.ofNullable(this.bookmarkFileName.get(fileCanonicalPath)).orElse(new HashSet<>()).stream().map(this.bookmarkNodeCache::get).filter(Objects::nonNull).collect(Collectors.toSet());

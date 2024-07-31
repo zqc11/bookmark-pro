@@ -28,7 +28,7 @@ public class OpenChangeFile extends OpenFileDescriptor {
 
     @Override
     public void navigate(boolean requestFocus) {
-        BookmarkFileNavigator fileNavigator = new BookmarkFileNavigator();
+        FileNavigator fileNavigator = new BookmarkFileNavigator();
         fileNavigator.navigate(this, requestFocus);
     }
 

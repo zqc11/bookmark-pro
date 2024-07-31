@@ -20,6 +20,7 @@ import org.bookmark.pro.utils.CharacterUtil;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PersistenceServiceHandler implements PersistenceService {
@@ -157,8 +158,13 @@ public class PersistenceServiceHandler implements PersistenceService {
     @Override
     public void addOneBookmark(Project project, BookmarkPro bookmark) {
         PersistentService service = getPersistentService(project, PersistentService.class);
+        List<BookmarkPro> children = service.getState().getChildren();
+        if (children == null) {
+            children = new ArrayList<>();
+            service.getState().setChildren(children);
+        }
         // 添加书签对象
-        service.getState().getChildren().add(bookmark);
+        children.add(bookmark);
     }
 
     @Override

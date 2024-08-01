@@ -70,7 +70,7 @@ public class PersistenceServiceHandler implements PersistenceService {
         // 导出到文件
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter(savePath);
+            fileWriter = new FileWriter(savePath, Charset.forName("utf-8"));
             Gson gson = new Gson();
             gson.toJson(bookmarkPro, fileWriter);
             return true;

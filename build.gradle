@@ -31,8 +31,11 @@ repositories {
 
 allprojects {
     tasks.withType(JavaCompile) {
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
         // 禁止过期方法检查
         options.deprecation = true
+        options.encoding = "UTF-8"
     }
 }
 

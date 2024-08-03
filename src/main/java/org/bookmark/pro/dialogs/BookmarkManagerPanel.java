@@ -223,7 +223,7 @@ public class BookmarkManagerPanel extends JPanel {
                 private void persistenceSave() {
                     new SwingWorker<Void, Void>() {
                         @Override
-                        protected Void doInBackground() throws Exception {
+                        protected Void doInBackground() {
                             try {
                                 BookmarkRunService.getPersistenceService(project).saveBookmark(project);
                             }catch (Exception e){

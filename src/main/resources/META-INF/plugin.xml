@@ -1,7 +1,7 @@
 <!-- 安装后需要重启 使用require-restart="true" -->
 <idea-plugin require-restart="true">
     <id>org.bookmark.pro.id</id>
-    <name>MarkBook-Pro</name>
+    <name>BookmarkPro</name>
     <version>223-241.01.02</version>
     <vendor email="xingrenfan@hotmail.com" url="https://github.com/xingrenfan/bookmark-pro">XingRenFan</vendor>
     <idea-version since-build="223.7571.182" until-build="241.*"/>

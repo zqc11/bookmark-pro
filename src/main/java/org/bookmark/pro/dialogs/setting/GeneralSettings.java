@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class GeneralSettings {
     protected JTextField markText;
-    protected JTextField sjzBeiFen;
+    protected JTextField backUp;
     protected JLabel markLabSel;
     protected JLabel noteLabSel;
     protected JLabel separatorSel;
@@ -22,9 +22,9 @@ public class GeneralSettings {
     protected JCheckBox lineDocument;
 
     public GeneralSettings(JTextField markText, JLabel markLabSel, JLabel noteLabSel,
-                           JLabel separatorSel, JSpinner maxCharNum, JCheckBox lineDocument, JSpinner selectedShowNum,JTextField  sjzBeiFen) {
+                           JLabel separatorSel, JSpinner maxCharNum, JCheckBox lineDocument, JSpinner selectedShowNum,JTextField backUp) {
         this.markText = markText;
-        this.sjzBeiFen=sjzBeiFen;
+        this.backUp = backUp;
         this.markLabSel = markLabSel;
         this.noteLabSel = noteLabSel;
         this.separatorSel = separatorSel;
@@ -137,6 +137,6 @@ public class GeneralSettings {
         // 行尾拓展器：在行尾显示书签内容
         BookmarkRunService.getBookmarkSettings().setLineDocument(lineDocument.isSelected());
         // 备份路径
-        BookmarkRunService.getBookmarkSettings().setSjzBeiFen(sjzBeiFen.getText());
+        BookmarkRunService.getBookmarkSettings().setBackUP(backUp.getText());
     }
 }

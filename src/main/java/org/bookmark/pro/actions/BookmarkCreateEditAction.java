@@ -66,7 +66,7 @@ public class BookmarkCreateEditAction extends AnAction {
         bookmarkModel.setColumn(column);
         // 设置书签标记文档
         bookmarkModel.setVirtualFile(file);
-        if (CharacterUtil.isEmpty(selectedText)) {
+        if (CharacterUtil.isNotEmpty(selectedText)) {
             bookmarkModel.setDesc(selectedText);
         }
         bookmarkModel.setName(file.getName());

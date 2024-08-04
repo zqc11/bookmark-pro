@@ -181,7 +181,7 @@ public class BookmarkManagerPanel extends JPanel {
         protected DefaultTreeModel doInBackground() {
             PersistenceService service = BookmarkRunService.getPersistenceService(openProject);
             if (enableSearch){
-                return new DefaultTreeModel(service.getBookmarkNodeSearch(openProject,searchText));
+                return new DefaultTreeModel(service.getBookmarkNodeSearch(openProject, searchText));
             }
             // 获取持久化书签对象
             return new DefaultTreeModel(service.getBookmarkNode(openProject));

@@ -26,24 +26,5 @@ public final class BookmarkHelpAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         BookmarkHelpForm helpForm = new BookmarkHelpForm();
         helpForm.show();
-/*
-        DialogWrapper helpDialog = new DialogWrapper(true) {
-            @Override
-            protected @Nullable JComponent createCenterPanel() {
-                JPanel dialogPanel = new JPanel(new BorderLayout());
-                JLabel addEdit = new JLabel("Add/Edit bookmark: Alt + shift + A");
-                addEdit.setPreferredSize(new Dimension(300, 100));
-                JLabel delete = new JLabel("Delete bookmark: Alt + shift + D");
-                delete.setPreferredSize(new Dimension(300, 100));
-                JLabel switchBookmark = new JLabel("Switch bookmark: Alt + shift + left/right keyboard");
-                switchBookmark.setPreferredSize(new Dimension(300, 100));
-                dialogPanel.add(addEdit, BorderLayout.CENTER);
-                dialogPanel.add(delete, BorderLayout.CENTER);
-                dialogPanel.add(switchBookmark, BorderLayout.CENTER);
-                return dialogPanel;
-            }
-        };
-        helpDialog.setTitle("BookmarkPro Using Help");
-        helpDialog.show();*/
     }
 }

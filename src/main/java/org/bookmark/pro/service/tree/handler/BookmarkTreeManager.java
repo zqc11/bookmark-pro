@@ -44,8 +44,6 @@ public final class BookmarkTreeManager extends BookmarkMenus implements Bookmark
         this.groupNavigator = new BookmarkGroupNavigator(project, this.bookmarkTree);
         // 添加Root节点
         addProjectNode(project, this.bookmarkTree, this.groupNavigator);
-        // 添加Ctrl+F搜索功能
-//        addTreeSearch(this.bookmarkTree);
         // 添加拖拽处理方案
         addDragHandler(this.bookmarkTree);
         // 书签图标渲染
@@ -119,7 +117,6 @@ public final class BookmarkTreeManager extends BookmarkMenus implements Bookmark
     @Override
     public void removeBookmarkNode(BookmarkTreeNode node) {
         this.bookmarkTree.removeNode(this.project, node);
-        BookmarkRunService.getDocumentService(project).removeBookmarkNode(this.project, node);
     }
 
     @Override
@@ -147,16 +144,6 @@ public final class BookmarkTreeManager extends BookmarkMenus implements Bookmark
         this.groupNavigator.setActivatedGroup(root);
     }
 
-    /**
-     * 添加书签树搜索功能
-     *
-     * @param bookmarkTree 书签树
-     */
-    /*private void addTreeSearch(BookmarkTree bookmarkTree) {
-        TreeSpeedSearch treeSpeedSearch = new TreeSpeedSearch(bookmarkTree);
-        treeSpeedSearch.setCanExpand(true);
-        bookmarkTree.setShowsRootHandles(true);
-    }*/
 
     /**
      * 添加拖动处理程序

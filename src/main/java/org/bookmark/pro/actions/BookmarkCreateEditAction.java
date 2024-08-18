@@ -53,21 +53,20 @@ public class BookmarkCreateEditAction extends AnAction {
     private void createOneBookmark(Project project, Editor editor, VirtualFile file, CaretModel caretModel, int markLine) {
         // 获取添加标记的列
         int column = caretModel.getLogicalPosition().column;
-        // 获取选中文本
-        String selectedText = caretModel.getCurrentCaret().getSelectedText();
-        selectedText = selectedText == null ? "" : (" " + selectedText + " ");
         // 书签唯一标识
         BookmarkNodeModel bookmarkModel = new BookmarkNodeModel();
         bookmarkModel.setUuid(UUID.randomUUID().toString());
         bookmarkModel.setLine(markLine);
         // 获取标记行内容
-        bookmarkModel.setMarkLineMd5(SignatureUtil.getMd5Digest(BookmarkProUtil.getAutoDescription(editor, markLine)));
+        String lineContent = BookmarkProUtil.getAutoDescription(editor, markLine);
+        lineContent = lineContent == null ? "" : ("origin: " + lineContent);
+        bookmarkModel.setMarkLineMd5(SignatureUtil.getMd5Digest(lineContent));
         bookmarkModel.setInvalid(false);
         bookmarkModel.setColumn(column);
         // 设置书签标记文档
         bookmarkModel.setVirtualFile(file);
-        if (CharacterUtil.isNotEmpty(selectedText)) {
-            bookmarkModel.setDesc(selectedText);
+        if (CharacterUtil.isNotEmpty(lineContent)) {
+            bookmarkModel.setDesc(lineContent);
         }
         bookmarkModel.setName(file.getName());
 

@@ -7,8 +7,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import org.bookmark.pro.base.BaseExportService;
-import org.bookmark.pro.constants.BookmarkProIcon;
-import org.bookmark.pro.context.BookmarkRunService;
+import org.bookmark.pro.constants.BookmarkIcons;
+import org.bookmark.pro.service.base.persistence.PersistService;
+import org.bookmark.pro.service.base.settings.BackupSettings;
 import org.bookmark.pro.utils.BookmarkNoticeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +30,7 @@ public class BackupScheduler implements BaseExportService {
         // 默认12个小时备份一次
         long backupInterval = 12;
         try {
-            backupInterval = Integer.parseInt(BookmarkRunService.getBookmarkSettings().getBackUpTime()); // 获取备份间隔，时间为小时
+            backupInterval = Integer.parseInt(BackupSettings.getInstance().getBackUpTime()); // 获取备份间隔，时间为小时
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,10 +48,10 @@ public class BackupScheduler implements BaseExportService {
     }
 
     private void performBackup(Project project) {
-        if (BookmarkRunService.getBookmarkSettings().getAutoBackup()) {
+        if (BackupSettings.getInstance().getAutoBackup()) {
             File autoBackupFile = getAutoBackupRootPath(project);
             String fileName = project.getName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HHmmss")) + ".json";
-            BookmarkRunService.getPersistenceService(project).exportBookmark(project, autoBackupFile.getPath() + File.separator + fileName);
+            PersistService.getInstance(project).exportBookmark(autoBackupFile.getPath() + File.separator + fileName);
         }
     }
 
@@ -61,7 +62,7 @@ public class BackupScheduler implements BaseExportService {
      * @param projectDir 项目根目录
      */
     private void sendExportNotice(Project project, String projectDir) {
-        AnAction openExportFile = new NotificationAction(BookmarkProIcon.EYE_SIGN + "ViewFile") {
+        AnAction openExportFile = new NotificationAction(BookmarkIcons.EYE_SIGN + "ViewFile") {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
                 try {

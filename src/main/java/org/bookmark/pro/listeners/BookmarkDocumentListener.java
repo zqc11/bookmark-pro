@@ -10,12 +10,14 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.apache.commons.lang3.StringUtils;
-import org.bookmark.pro.context.BookmarkRunService;
+import org.apache.commons.collections.CollectionUtils;
 import org.bookmark.pro.domain.model.BookmarkNodeModel;
-import org.bookmark.pro.service.tree.handler.BookmarkTreeNode;
+import org.bookmark.pro.service.base.document.DocumentService;
+import org.bookmark.pro.service.base.persistence.PersistService;
+import org.bookmark.pro.service.tree.TreeService;
+import org.bookmark.pro.service.tree.component.BookmarkTree;
+import org.bookmark.pro.service.tree.component.BookmarkTreeNode;
 import org.bookmark.pro.utils.BookmarkNoticeUtil;
-import org.bookmark.pro.utils.CollectionUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -46,8 +48,8 @@ public class BookmarkDocumentListener implements DocumentListener {
 
         try {
             // 查询文件中的书签
-            Set<BookmarkTreeNode> bookmarkNodes = BookmarkRunService.getDocumentService(project).getBookmarkNodes(project, virtualFile);
-            if (CollectionUtil.isEmpty(bookmarkNodes)) {
+            Set<BookmarkTreeNode> bookmarkNodes = DocumentService.getInstance(project).getBookmarkNodes(virtualFile);
+            if (CollectionUtils.isEmpty(bookmarkNodes)) {
                 // 空的直接返回
                 return;
             }
@@ -95,11 +97,11 @@ public class BookmarkDocumentListener implements DocumentListener {
     /**
      * 感知到线路变化
      *
-     * @param project        项目
-     * @param virtualFile    虚拟文件
-     * @param bookmarkNodes  为节点添加书签
-     * @param lineRange      线范围
-     * @param isAddLine      是添加
+     * @param project       项目
+     * @param virtualFile   虚拟文件
+     * @param bookmarkNodes 为节点添加书签
+     * @param lineRange     线范围
+     * @param isAddLine     是添加
      */
     private void perceivedLineChange(Project project, Document document, VirtualFile virtualFile, Set<BookmarkTreeNode> bookmarkNodes, LineRange lineRange, boolean isAddLine, int offset, int startOffset) {
         for (BookmarkTreeNode node : bookmarkNodes) {
@@ -112,19 +114,21 @@ public class BookmarkDocumentListener implements DocumentListener {
 
             if (!isAddLine && (bookmarkPositionLine == lineRange.start || bookmarkPositionLine < lineRange.end)) {
                 // 管理器中删除书签
-                BookmarkRunService.getBookmarkManage(project).removeBookmarkNode(node);
+                TreeService.getInstance(project).removeBookmarkNode(node);
                 continue;
             }
-
+            DocumentService documentService = DocumentService.getInstance(project);
             // 移除缓存的旧书签
-            BookmarkRunService.getDocumentService(project).removeBookmarkNode(project, node);
+            documentService.removeBookmarkNode(node);
             int lineGap = lineRange.end - lineRange.start;
             nodeModel.setLine(bookmarkPositionLine + (isAddLine ? lineGap : -lineGap));
             nodeModel.setVirtualFile(virtualFile);
             node.setUserObject(nodeModel);
-            BookmarkRunService.getDocumentService(project).addBookmarkNode(project, node);
-            BookmarkRunService.getBookmarkManage(project).getBookmarkTree().getModel().nodeChanged(node);
-            BookmarkRunService.getPersistenceService(project).saveBookmark(project);
+            documentService.addBookmarkNode(node);
+            TreeService.getInstance(project).getBookmarkTree().getModel().nodeChanged(node);
+            // 获取书签树
+            BookmarkTree bookmarkTree = TreeService.getInstance(project).getBookmarkTree();
+            PersistService.getInstance(project).saveBookmark(bookmarkTree);
         }
     }
 

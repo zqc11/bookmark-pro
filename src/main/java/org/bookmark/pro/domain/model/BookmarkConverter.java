@@ -1,10 +1,11 @@
 package org.bookmark.pro.domain.model;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.lang3.StringUtils;
 import org.bookmark.pro.domain.BookmarkPro;
+
+import java.util.Objects;
 
 /**
  * 书签转换器
@@ -29,7 +30,7 @@ public class BookmarkConverter {
             // 书签分组模型
             GroupNodeModel nodeModel = (GroupNodeModel) model;
             BookmarkPro po = new BookmarkPro();
-            po.setUuid(nodeModel.getUuid());
+            po.setCommitHash(nodeModel.getCommitHash());
             po.setName(nodeModel.getName());
             po.setBookmark(false);
             return po;
@@ -38,7 +39,7 @@ public class BookmarkConverter {
 
     private static BookmarkPro getBookmarkPro(AbstractTreeNodeModel model, BookmarkNodeModel nodeModel) {
         BookmarkPro bookmarkPro = new BookmarkPro();
-        bookmarkPro.setUuid(nodeModel.getUuid());
+        bookmarkPro.setCommitHash(nodeModel.getCommitHash());
         bookmarkPro.setIndex(nodeModel.getIndex());
         bookmarkPro.setLine(nodeModel.getLine());
         bookmarkPro.setColumn(nodeModel.getColumn());
@@ -57,15 +58,14 @@ public class BookmarkConverter {
     /**
      * 持久化对象转书签模型
      *
-     * @param project     项目
      * @param bookmarkPro 持久化对象
      * @return {@link AbstractTreeNodeModel}
      */
-    public static AbstractTreeNodeModel beanToModel(Project project, BookmarkPro bookmarkPro) {
+    public static AbstractTreeNodeModel beanToModel(BookmarkPro bookmarkPro) {
         if (bookmarkPro.isBookmark()) {
             // 书签模型
             BookmarkNodeModel model = new BookmarkNodeModel();
-            model.setUuid(bookmarkPro.getUuid());
+            model.setCommitHash(bookmarkPro.getCommitHash());
             model.setIndex(bookmarkPro.getIndex());
             model.setLine(bookmarkPro.getLine());
             model.setColumn(bookmarkPro.getColumn());
@@ -86,7 +86,7 @@ public class BookmarkConverter {
         } else {
             // 分组模型
             GroupNodeModel model = new GroupNodeModel();
-            model.setUuid(bookmarkPro.getUuid());
+            model.setCommitHash(Objects.isNull(bookmarkPro.getCommitHash()) ? bookmarkPro.getUuid() : bookmarkPro.getCommitHash());
             model.setName(bookmarkPro.getName());
             return model;
         }

@@ -139,7 +139,6 @@ public class BookmarkPanel extends JPanel {
     /**
      * 添加一个书签
      *
-     * @param project
      * @param bookmarkModel 书签模型
      */
     public void addOneBookmark(BookmarkTreeNode parentNode, BookmarkNodeModel bookmarkModel) {

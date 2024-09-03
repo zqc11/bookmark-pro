@@ -282,7 +282,6 @@ public class BookmarkMenus {
 
             // 新的分组节点
             BookmarkTreeNode groupNode = new BookmarkTreeNode(new GroupNodeModel(groupName, UUID.randomUUID().toString()), true);
-            bookmarkTree.getDefaultModel().insertNodeInto(groupNode, parent, 0);
             TreeService.getInstance(this.openProject).addBookmarkNode(parent, groupNode);
         });
     }

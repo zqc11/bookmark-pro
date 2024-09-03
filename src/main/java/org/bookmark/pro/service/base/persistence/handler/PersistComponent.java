@@ -27,9 +27,6 @@ public class PersistComponent implements PersistentStateComponent<BookmarkPro> {
         if (state == null) {
             throw new RuntimeException("书签为空,保存异常!");
         }
-        if (state.getChildren() == null) {
-            return;
-        }
         this.state = state;
     }
 
@@ -48,9 +45,6 @@ public class PersistComponent implements PersistentStateComponent<BookmarkPro> {
     public void loadState(@NotNull BookmarkPro state) {
         if (state == null) {
             throw new RuntimeException("书签为空,保存异常!");
-        }
-        if (state.getChildren() == null) {
-            return;
         }
         // 当持久化组件 PersistentStateComponent 创建的时候或持久化Xml文件发生变化的时候，会调用 loadState() 方法（仅当组件存在一些非默认持久化数据时）
         this.state = state;

@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project;
 import org.bookmark.pro.service.ServiceContext;
 import org.bookmark.pro.service.tree.component.BookmarkTree;
 import org.bookmark.pro.service.tree.component.BookmarkTreeNode;
-import org.bookmark.pro.service.tree.handler.TreeServiceImpl;
 
 /**
  * 书签树管理器
@@ -66,14 +65,12 @@ public interface TreeService {
     /**
      * 下一个书签
      *
-     * @param project 项目
      */
     void nextBookmark();
 
     /**
      * 上一个书签
      *
-     * @param project 项目
      */
     void preBookmark();
 

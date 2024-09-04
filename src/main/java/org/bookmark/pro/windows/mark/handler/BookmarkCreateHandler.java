@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project;
 import org.bookmark.pro.base.I18N;
 import org.bookmark.pro.domain.model.BookmarkNodeModel;
 import org.bookmark.pro.service.base.document.DocumentService;
-import org.bookmark.pro.service.tree.TreeService;
 import org.bookmark.pro.service.tree.component.BookmarkTree;
 import org.bookmark.pro.service.tree.component.BookmarkTreeNode;
 import org.bookmark.pro.utils.BookmarkEditorUtil;
@@ -14,8 +13,6 @@ import org.bookmark.pro.windows.mark.BookmarkSelector;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * 书签创建处理程序
@@ -60,9 +57,9 @@ public class BookmarkCreateHandler extends BaseServiceUtil implements BookmarkEd
 
     @Override
     public void showBookmarkParent(Project project, JPanel panel, GridBagConstraints constraints, BookmarkNodeModel node) {
-        BookmarkTree bookmarkTree = TreeService.getInstance(this.openProject).getBookmarkTree();
+        BookmarkTree bookmarkTree = BookmarkTree.getInstance(this.openProject);
         TreePath path = bookmarkTree.getSelectionPath();
-        BookmarkTreeNode selectedNode = null;
+        BookmarkTreeNode selectedNode;
         if (null == path) {
             selectedNode = (BookmarkTreeNode) bookmarkTree.getModel().getRoot();
         } else {
@@ -72,7 +69,7 @@ public class BookmarkCreateHandler extends BaseServiceUtil implements BookmarkEd
         if (selectedNode != null) {
             // 获取父级书签下拉选项书签
             JComboBox<BookmarkTreeNode> bookmarkType = new JComboBox<>();
-            DocumentService.getInstance(this.openProject).getBookmarkGroup().stream().forEach(dto -> bookmarkType.addItem(dto));
+            DocumentService.getInstance(this.openProject).getBookmarkGroup().forEach(bookmarkType::addItem);
             if (selectedNode.isGroup()) {
                 bookmarkType.setSelectedItem(selectedNode);
                 this.parentNode = selectedNode;
@@ -86,12 +83,7 @@ public class BookmarkCreateHandler extends BaseServiceUtil implements BookmarkEd
 
             if (this.parentNode != null) {
                 bookmarkParent(panel, constraints, this.nowLineNumber, bookmarkType);
-                bookmarkType.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        parentNode = (BookmarkTreeNode) bookmarkType.getSelectedItem();
-                    }
-                });
+                bookmarkType.addActionListener(e -> parentNode = (BookmarkTreeNode) bookmarkType.getSelectedItem());
                 this.nowLineNumber = this.nowLineNumber + 1;
             }
         }

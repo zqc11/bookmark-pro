@@ -8,8 +8,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.bookmark.pro.domain.model.AbstractTreeNodeModel;
 import org.bookmark.pro.service.base.document.DocumentService;
 import org.bookmark.pro.service.tree.TreeService;
+import org.bookmark.pro.service.tree.component.BookmarkTree;
 import org.bookmark.pro.service.tree.component.BookmarkTreeNode;
 import org.bookmark.pro.utils.BookmarkNoticeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +29,7 @@ public class BookmarkDeleteAction extends AnAction {
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
         if (project == null || editor == null || file == null) return;
+        if (BookmarkTree.getInstance(project).checkAndNoticeIsSearchView()) return;
         int result = Messages.showOkCancelDialog(project, "Delete Selected Bookmark", "Delete Bookmark", "Delete", "Cancel", Messages.getQuestionIcon());
         if (result == Messages.CANCEL) {
             return;

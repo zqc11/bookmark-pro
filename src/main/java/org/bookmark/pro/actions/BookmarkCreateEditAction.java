@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.lang3.StringUtils;
 import org.bookmark.pro.domain.model.BookmarkNodeModel;
+import org.bookmark.pro.service.tree.component.BookmarkTree;
 import org.bookmark.pro.utils.BookmarkUtil;
 import org.bookmark.pro.utils.SignatureUtil;
 import org.bookmark.pro.windows.BookmarkPanel;
@@ -32,6 +33,7 @@ public class BookmarkCreateEditAction extends AnAction {
         if (project == null || editor == null || file == null) {
             return;
         }
+        if (BookmarkTree.getInstance(project).checkAndNoticeIsSearchView()) return;
         // 创建或编辑书签组件
         CaretModel caretModel = editor.getCaretModel();
         // 获取添加标记的行号

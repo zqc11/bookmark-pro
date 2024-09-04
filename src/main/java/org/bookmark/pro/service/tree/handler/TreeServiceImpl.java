@@ -51,7 +51,7 @@ public final class TreeServiceImpl implements TreeService {
         // 添加Root节点
         addProjectNode(openProject, BookmarkTree.getInstance(openProject), this.groupNavigator);
         // 添加搜索提示
-        bookmarkTip(openProject, BookmarkTree.getInstance(openProject));
+        bookmarkTip(BookmarkTree.getInstance(openProject));
         // 添加拖拽处理方案
         addDragHandler(BookmarkTree.getInstance(openProject));
         // 书签图标渲染
@@ -216,7 +216,7 @@ public final class TreeServiceImpl implements TreeService {
         });
     }
 
-    private void bookmarkTip(Project project, BookmarkTree bookmarkTree) {
+    private void bookmarkTip(BookmarkTree bookmarkTree) {
         if (BookmarkConstants.TIPS_FOR_TOOL.equals(GlobalSettings.getInstance().getTipType())) {
             bookmarkTree.addMouseMotionListener(new MouseMotionAdapter() {
                 @Override

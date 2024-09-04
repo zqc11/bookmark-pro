@@ -20,6 +20,7 @@ import org.bookmark.pro.service.tree.component.BookmarkTreeNode;
 import org.bookmark.pro.utils.BookmarkNoticeUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -104,6 +105,7 @@ public class BookmarkDocumentListener implements DocumentListener {
      * @param isAddLine     是添加
      */
     private void perceivedLineChange(Project project, Document document, VirtualFile virtualFile, Set<BookmarkTreeNode> bookmarkNodes, LineRange lineRange, boolean isAddLine, int offset, int startOffset) {
+        Set<BookmarkTreeNode> deleteSet = new HashSet<>();
         for (BookmarkTreeNode node : bookmarkNodes) {
             BookmarkNodeModel nodeModel = (BookmarkNodeModel) node.getUserObject();
             int bookmarkPositionLine = nodeModel.getLine();
@@ -112,23 +114,21 @@ public class BookmarkDocumentListener implements DocumentListener {
             int _startOffset = isAddLine ? startOffset : getStartOffset(document, bookmarkPositionLine);
             if (bookmarkPositionLine == lineRange.start && offset > _startOffset) continue;
 
+            // 删除
             if (!isAddLine && (bookmarkPositionLine == lineRange.start || bookmarkPositionLine < lineRange.end)) {
-                // 管理器中删除书签
-                TreeService.getInstance(project).removeBookmarkNode(node);
+                deleteSet.add(node);
                 continue;
             }
-            DocumentService documentService = DocumentService.getInstance(project);
-            // 移除缓存的旧书签
-            documentService.removeBookmarkNode(node);
+
             int lineGap = lineRange.end - lineRange.start;
             nodeModel.setLine(bookmarkPositionLine + (isAddLine ? lineGap : -lineGap));
             nodeModel.setVirtualFile(virtualFile);
             node.setUserObject(nodeModel);
-            documentService.addBookmarkNode(node);
-            TreeService.getInstance(project).getBookmarkTree().getModel().nodeChanged(node);
-            // 获取书签树
-            BookmarkTree bookmarkTree = TreeService.getInstance(project).getBookmarkTree();
-            PersistService.getInstance(project).saveBookmark(bookmarkTree);
+            BookmarkTree.getInstance(project).getModel().nodeChanged(node);
+        }
+        for (BookmarkTreeNode bookmarkTreeNode : deleteSet) {
+            // 管理器中删除书签
+            TreeService.getInstance(project).removeBookmarkNode(bookmarkTreeNode);
         }
     }
 

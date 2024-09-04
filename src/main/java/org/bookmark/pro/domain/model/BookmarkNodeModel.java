@@ -74,6 +74,8 @@ public class BookmarkNodeModel implements AbstractTreeNodeModel {
      */
     private boolean bookmark;
 
+    private boolean isSearchView;
+
     public BookmarkNodeModel() {
     }
 
@@ -103,6 +105,16 @@ public class BookmarkNodeModel implements AbstractTreeNodeModel {
         } else {
             return name + "[" + BookmarkIcons.BOOKMARK_SIGN + "]";
         }
+    }
+
+    @Override
+    public boolean isSearchView() {
+        return isSearchView;
+    }
+
+    @Override
+    public void setIsSearchView(boolean b) {
+        isSearchView = b;
     }
 
     public void openFileDescriptor(Project project) {

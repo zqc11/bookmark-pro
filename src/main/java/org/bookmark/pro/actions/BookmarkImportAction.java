@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.bookmark.pro.base.I18N;
 import org.bookmark.pro.service.base.persistence.PersistService;
 import org.bookmark.pro.service.tree.TreeService;
+import org.bookmark.pro.service.tree.component.BookmarkTree;
 import org.bookmark.pro.utils.BookmarkNoticeUtil;
 import org.bookmark.pro.windows.BookmarkPanel;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ public final class BookmarkImportAction extends AnAction {
         }
         if (PersistService.getInstance(project).importBookmark(virtualFile)) {
             // 重新加载标签书
-            BookmarkPanel.getInstance(project).reloadBookmarkTree(TreeService.getInstance(project).getBookmarkTree());
+            BookmarkPanel.getInstance(project).reloadBookmarkTree(BookmarkTree.getInstance(project));
             BookmarkNoticeUtil.projectNotice(project, "Bookmark import success.");
         }
     }

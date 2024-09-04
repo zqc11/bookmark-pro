@@ -19,4 +19,9 @@ public interface AbstractTreeNodeModel {
     String getCommitHash();
 
     String toString();
+
+    // 是否为搜索重建所得
+    boolean isSearchView();
+
+    void setIsSearchView(boolean b);
 }

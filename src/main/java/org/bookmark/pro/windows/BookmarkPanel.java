@@ -46,19 +46,20 @@ public class BookmarkPanel extends JPanel {
      * 标记 tree 是否已经从持久化文件加载完成
      */
     private volatile boolean treeLoaded = false;
-    private Project openProject;
+    private final Project openProject;
 
     private final JEditorPane jepDesc = new JEditorPane();
     private final JTextField searchField = new JTextField(20); // 添加搜索框
 
     public BookmarkPanel(Project project) {
         this.openProject = project;
+        BookmarkTree bookmarkTree = TreeService.getInstance(this.openProject).getBookmarkTree();
         // 初始化配置
-        initSettings(TreeService.getInstance(this.openProject).getBookmarkTree());
+        initSettings(bookmarkTree);
         // 加载书签树
-        reloadBookmarkTree(TreeService.getInstance(this.openProject).getBookmarkTree());
+        reloadBookmarkTree(bookmarkTree);
         // 添加搜索框监听器
-        addSearchListener(project, TreeService.getInstance(this.openProject).getBookmarkTree());
+        addSearchListener(bookmarkTree);
     }
 
     private void initSettings(BookmarkTree bookmarkTree) {
@@ -83,7 +84,7 @@ public class BookmarkPanel extends JPanel {
         setBackground(JBColor.WHITE);
     }
 
-    private void addSearchListener(Project project, BookmarkTree bookmarkTree) {
+    private void addSearchListener(BookmarkTree bookmarkTree) {
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -105,7 +106,7 @@ public class BookmarkPanel extends JPanel {
                 if (StringUtils.isBlank(filterText)) {
                     reloadBookmarkTree(bookmarkTree);
                 } else {
-                    new TreeLoadWorker(project, bookmarkTree, filterText, true).execute();
+                    new TreeLoadWorker(openProject, bookmarkTree, filterText, true).execute();
                 }
             }
         });
@@ -142,17 +143,12 @@ public class BookmarkPanel extends JPanel {
      * @param bookmarkModel 书签模型
      */
     public void addOneBookmark(BookmarkTreeNode parentNode, BookmarkNodeModel bookmarkModel) {
-        // TODO 一次都没有创建过项目
         if (!treeLoaded) {
             BookmarkPro bookmark = BookmarkConverter.modelToBean(bookmarkModel);
             // 获取持久化书签对象
             PersistService.getInstance(this.openProject).addOneBookmark(bookmark);
             return;
         }
-        // 添加书签
-        /*if (!treeLoaded) {
-            return;
-        }*/
         BookmarkTreeNode treeNode = new BookmarkTreeNode(bookmarkModel, true);
         if (parentNode == null) {
             // 书签管理窗口添加书签
@@ -180,7 +176,7 @@ public class BookmarkPanel extends JPanel {
         }
 
         @Override
-        protected DefaultTreeModel doInBackground() throws Exception {
+        protected DefaultTreeModel doInBackground() {
             PersistService service = PersistService.getInstance(this.project);
             if (enableSearch) {
                 return new DefaultTreeModel(service.getBookmarkNodeSearch(searchText));
@@ -222,10 +218,10 @@ public class BookmarkPanel extends JPanel {
                 private void persistenceSave() {
                     new SwingWorker<Void, Void>() {
                         @Override
-                        protected Void doInBackground() throws Exception {
+                        protected Void doInBackground() {
                             try {
                                 // 获取书签树
-                                BookmarkTree bookmarkTree = TreeService.getInstance(project).getBookmarkTree();
+                                BookmarkTree bookmarkTree  = BookmarkTree.getInstance(project);
                                 PersistService.getInstance(project).saveBookmark(bookmarkTree);
                             } catch (Exception e) {
                                 BookmarkNoticeUtil.projectNotice(project, "出现异常" + e.getMessage());

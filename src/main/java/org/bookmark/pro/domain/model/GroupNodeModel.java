@@ -19,6 +19,8 @@ public class GroupNodeModel implements AbstractTreeNodeModel {
 
     private String name;
 
+    private boolean isSearchView;
+
     public GroupNodeModel() {
 
     }
@@ -51,6 +53,16 @@ public class GroupNodeModel implements AbstractTreeNodeModel {
     @Override
     public String toString() {
         return name + "[" + BookmarkIcons.GROUP_SIGN + "]";
+    }
+
+    @Override
+    public boolean isSearchView() {
+        return isSearchView;
+    }
+
+    @Override
+    public void setIsSearchView(boolean b) {
+        isSearchView = b;
     }
 
     public void setName(String name) {

@@ -22,7 +22,7 @@ public class ServiceContext {
             if (FAIR_LOCKS.tryLock()) {
                 if (!context.containsKey(openProject)) {
                     try {
-                        this.context.put(openProject, new AppAttribute(openProject));
+                        context.put(openProject, new AppAttribute(openProject));
                     } catch (Exception e) {
                         BookmarkNoticeUtil.errorMessages(openProject, I18N.get("exception.project.initializeFail") + e.getMessage());
                     } finally {

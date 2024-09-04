@@ -136,6 +136,7 @@ public class BookmarkMenus {
         JBMenuItem editMenu = new JBMenuItem("Update");
         // 书签编辑操作
         editMenu.addActionListener(e -> {
+            if (BookmarkTree.getInstance(openProject).checkAndNoticeIsSearchView()) return;
             TreePath path = bookmarkTree.getSelectionPath();
             if (null == path) {
                 return;
@@ -227,6 +228,7 @@ public class BookmarkMenus {
         JBMenuItem deleteMenu = new JBMenuItem("Delete");
         // 书签删除操作
         deleteMenu.addActionListener(e -> {
+            if (BookmarkTree.getInstance(openProject).checkAndNoticeIsSearchView()) return;
             int result = Messages.showOkCancelDialog(this.openProject, "Delete Selected Bookmark", "Delete Bookmark", "Delete", "Cancel", Messages.getQuestionIcon());
             if (result == Messages.CANCEL) {
                 return;
@@ -256,6 +258,7 @@ public class BookmarkMenus {
      */
     private void addActionListener(JBMenuItem item, final BookmarkTree bookmarkTree) {
         item.addActionListener(e -> {
+            if (BookmarkTree.getInstance(openProject).checkAndNoticeIsSearchView()) return;
             // 获取选定的节点
             BookmarkTreeNode selectedNode = (BookmarkTreeNode) bookmarkTree.getLastSelectedPathComponent();
             if (null == selectedNode) {

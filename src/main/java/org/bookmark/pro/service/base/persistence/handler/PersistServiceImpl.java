@@ -44,8 +44,11 @@ public final class PersistServiceImpl implements PersistService {
         if (bookmarkTree == null) {
             return;
         }
-        // 保存书签树
         BookmarkTreeNode rootNode = (BookmarkTreeNode) bookmarkTree.getModel().getRoot();
+        AbstractTreeNodeModel model = (AbstractTreeNodeModel) rootNode.getUserObject();
+        // 搜索状态不允许持久化
+        if (model.isSearchView()) return;
+
         BookmarkPro bookmark = BookmarkUtil.nodeToBean(rootNode);
         // 获取持久化书签对象
         getPersistComponent().setState(bookmark);
@@ -158,6 +161,7 @@ public final class PersistServiceImpl implements PersistService {
      */
     private BookmarkTreeNode generateTreeNodeSearch(BookmarkPro bookmark, String searchText) {
         AbstractTreeNodeModel model = BookmarkConverter.beanToModel(bookmark);
+        model.setIsSearchView(true);
         BookmarkTreeNode treeNode = new BookmarkTreeNode(model, !bookmark.isBookmark());
 
         // 编译正则表达式
@@ -180,7 +184,9 @@ public final class PersistServiceImpl implements PersistService {
         // 如果父节点匹配，则添加所有子节点
         if (isParentMatched) {
             for (BookmarkPro childrenBookmark : childrenBookmarks) {
-                BookmarkTreeNode childNode = new BookmarkTreeNode(BookmarkConverter.beanToModel(childrenBookmark));
+                AbstractTreeNodeModel nodeModel = BookmarkConverter.beanToModel(childrenBookmark);
+                nodeModel.setIsSearchView(true);
+                BookmarkTreeNode childNode = new BookmarkTreeNode(nodeModel);
                 treeNode.add(childNode);
                 addAllChildren(childNode, childrenBookmark);
             }

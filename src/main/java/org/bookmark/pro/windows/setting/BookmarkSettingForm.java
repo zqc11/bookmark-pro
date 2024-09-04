@@ -1,7 +1,6 @@
 package org.bookmark.pro.windows.setting;
 
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +24,6 @@ public class BookmarkSettingForm implements Configurable {
     private JSpinner maxCharNum;
     private JCheckBox lineDocument;
     private JSpinner selectedShowNum;
-    private JTextField sjzBeiFen;
 
     private JButton backupButton;
     private JTextField backUpPath;
@@ -63,7 +61,7 @@ public class BookmarkSettingForm implements Configurable {
     }
 
     @Override
-    public void apply() throws ConfigurationException {
+    public void apply() {
         // 保存常规配置
         generalSettings.saveGeneralSetting();
         backupSetting.saveBackupSetting();

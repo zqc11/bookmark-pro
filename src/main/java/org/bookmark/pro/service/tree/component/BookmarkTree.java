@@ -2,8 +2,10 @@ package org.bookmark.pro.service.tree.component;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.Tree;
+import org.bookmark.pro.domain.model.AbstractTreeNodeModel;
 import org.bookmark.pro.service.ServiceContext;
 import org.bookmark.pro.service.base.document.DocumentService;
+import org.bookmark.pro.utils.BookmarkNoticeUtil;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -24,7 +26,7 @@ public class BookmarkTree extends Tree {
 
     private DefaultTreeModel model;
 
-    private Project openProject;
+    private final Project openProject;
 
     public BookmarkTree(Project project) {
         super();
@@ -62,7 +64,8 @@ public class BookmarkTree extends Tree {
      * @param node   要添加的节点
      */
     public void addNode(BookmarkTreeNode parent, BookmarkTreeNode node) {
-        model.insertNodeInto(node, parent, parent.getChildCount());
+        int index = node.isGroup() ? 0 : parent.getChildCount();
+        model.insertNodeInto(node, parent, index);
         // 定位到新增的节点并使其可见
         scrollPathToVisible(new TreePath(node.getPath()));
         // 缓存书签树
@@ -93,5 +96,16 @@ public class BookmarkTree extends Tree {
         } else {
             return null;
         }
+    }
+
+    public boolean checkAndNoticeIsSearchView() {
+        BookmarkTreeNode rootNode = (BookmarkTreeNode) model.getRoot();
+        AbstractTreeNodeModel model = (AbstractTreeNodeModel) rootNode.getUserObject();
+        // 搜索状态不允许持久化
+        if (model.isSearchView()) {
+            BookmarkNoticeUtil.warningMessages(openProject, "搜索状态下不允许修改书签树");
+            return true;
+        }
+        return false;
     }
 }

@@ -44,13 +44,14 @@ public class BookmarkTipPanel extends JBPanel<BookmarkTipPanel> {
             setBody(sb.toString());
             Border borderWithPadding = JBUI.Borders.empty(0, 10, 10, 10);
             setBorder(borderWithPadding);
-            setSize(desc.indexOf("\n") * 10, (int) desc.lines().count() * 20 + 50);
+            int index = desc.indexOf("\n");
+            setSize((index > 0 ? index : desc.length()) * 13, (int) desc.lines().count() * 20 + 100);
         }
 
         @Override
         public Dimension getPreferredScrollableViewportSize() {
             Dimension preferredSize = getSize();
-            return new Dimension(Math.max(preferredSize.width, 300), preferredSize.height);
+            return new Dimension(Math.max(preferredSize.width, 300), Math.max(preferredSize.height, 150));
         }
 
         @Override

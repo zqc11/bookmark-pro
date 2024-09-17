@@ -230,6 +230,7 @@ public final class TreeServiceImpl implements TreeService {
                         if (this.lastPopup != null) {
                             lastPopup.cancel();
                         }
+                        lastAbstractTreeNodeModel = null;
                     }
                 }
 

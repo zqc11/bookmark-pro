@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
+import org.apache.commons.lang3.StringUtils;
 import org.bookmark.pro.base.BookmarkTipPanel;
 import org.bookmark.pro.constants.BookmarkConstants;
 import org.bookmark.pro.constants.BookmarkIcons;
@@ -249,7 +250,7 @@ public final class TreeServiceImpl implements TreeService {
                 private AbstractTreeNodeModel lastAbstractTreeNodeModel;
 
                 private void showToolTip(AbstractTreeNodeModel nodeModel, MouseEvent e) {
-                    if (nodeModel == null) {
+                    if (nodeModel == null || StringUtils.isBlank(nodeModel.getDesc())) {
                         return;
                     }
                     if (lastAbstractTreeNodeModel == nodeModel) {
@@ -258,9 +259,8 @@ public final class TreeServiceImpl implements TreeService {
                     if (this.lastPopup != null) {
                         lastPopup.cancel();
                     }
+                    lastAbstractTreeNodeModel = nodeModel;
                     if (nodeModel.isBookmark()) {
-                        lastAbstractTreeNodeModel = nodeModel;
-
                         JBPopupFactory popupFactory = JBPopupFactory.getInstance();
                         lastPopup = popupFactory.createComponentPopupBuilder(new BookmarkTipPanel(lastAbstractTreeNodeModel), null).setFocusable(true).setResizable(true).setRequestFocus(true).createPopup();
 

@@ -26,7 +26,6 @@ public class BookmarkTipPanel extends JBPanel<BookmarkTipPanel> {
         setLayout(new BorderLayout());
 
         TipHtmlPanel tipHtmlPanel = new TipHtmlPanel(model);
-        tipHtmlPanel.setSize(tipHtmlPanel.getPreferredSize());
 
         JBScrollPane scrollPane = new JBScrollPane(tipHtmlPanel);
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
@@ -39,27 +38,19 @@ public class BookmarkTipPanel extends JBPanel<BookmarkTipPanel> {
     protected static class TipHtmlPanel extends HtmlPanel {
         public TipHtmlPanel(@NotNull AbstractTreeNodeModel nodeModel) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<h3>" + nodeModel.getName() + "</h3>");
+            sb.append("<h3>").append(nodeModel.getName()).append("</h3>");
             String desc = StringUtils.isNotBlank(nodeModel.getDesc()) ? nodeModel.getDesc() : I18N.get("tips.not.desc");
-            sb.append(desc);
+            sb.append("<p>").append(desc.replace("\n", "<br/>")).append("</p>");
             setBody(sb.toString());
             Border borderWithPadding = JBUI.Borders.empty(0, 10, 10, 10);
             setBorder(borderWithPadding);
-        }
-
-        @Override
-        public Dimension getPreferredSize() {
-            Dimension preferredSize = super.getPreferredSize();
-            if (preferredSize.width > 300) {
-                preferredSize.width = 300;
-            }
-            return preferredSize;
+            setSize(desc.indexOf("\n") * 10, (int) desc.lines().count() * 20 + 50);
         }
 
         @Override
         public Dimension getPreferredScrollableViewportSize() {
-            Dimension preferredSize = getPreferredSize();
-            return new Dimension(Math.min(preferredSize.width, 300), Math.min(preferredSize.height, 150));
+            Dimension preferredSize = getSize();
+            return new Dimension(Math.max(preferredSize.width, 300), preferredSize.height);
         }
 
         @Override

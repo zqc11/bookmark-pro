@@ -41,13 +41,15 @@ public final class PersistServiceImpl implements PersistService {
 
     @Override
     public void saveBookmark(BookmarkTree bookmarkTree) {
-        if (bookmarkTree == null) {
+        if (bookmarkTree == null || bookmarkTree.getModel() == null) {
             return;
         }
         BookmarkTreeNode rootNode = (BookmarkTreeNode) bookmarkTree.getModel().getRoot();
+        if (rootNode == null) return;
+
         AbstractTreeNodeModel model = (AbstractTreeNodeModel) rootNode.getUserObject();
         // 搜索状态不允许持久化
-        if (model.isSearchView()) return;
+        if (model == null || model.isSearchView()) return;
 
         BookmarkPro bookmark = BookmarkUtil.nodeToBean(rootNode);
         // 获取持久化书签对象

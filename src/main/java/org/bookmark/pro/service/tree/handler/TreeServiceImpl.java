@@ -250,7 +250,7 @@ public final class TreeServiceImpl implements TreeService {
                 private AbstractTreeNodeModel lastAbstractTreeNodeModel;
 
                 private void showToolTip(AbstractTreeNodeModel nodeModel, MouseEvent e) {
-                    if (nodeModel == null || StringUtils.isBlank(nodeModel.getDesc())) {
+                    if (nodeModel == null) {
                         return;
                     }
                     if (lastAbstractTreeNodeModel == nodeModel) {
@@ -260,6 +260,7 @@ public final class TreeServiceImpl implements TreeService {
                         lastPopup.cancel();
                     }
                     lastAbstractTreeNodeModel = nodeModel;
+                    if (StringUtils.isBlank(nodeModel.getDesc())) return;
                     if (nodeModel.isBookmark()) {
                         JBPopupFactory popupFactory = JBPopupFactory.getInstance();
                         lastPopup = popupFactory.createComponentPopupBuilder(new BookmarkTipPanel(lastAbstractTreeNodeModel), null).setFocusable(true).setResizable(true).setRequestFocus(true).createPopup();

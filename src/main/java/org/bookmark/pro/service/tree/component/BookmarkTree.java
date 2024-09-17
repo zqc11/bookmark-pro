@@ -99,13 +99,23 @@ public class BookmarkTree extends Tree {
     }
 
     public boolean checkAndNoticeIsSearchView() {
-        BookmarkTreeNode rootNode = (BookmarkTreeNode) model.getRoot();
-        AbstractTreeNodeModel model = (AbstractTreeNodeModel) rootNode.getUserObject();
-        // 搜索状态不允许持久化
-        if (model.isSearchView()) {
-            BookmarkNoticeUtil.warningMessages(openProject, "搜索状态下不允许修改书签树");
+        if (model == null || model.getRoot() == null) {
+            showWarningMessages();
             return true;
         }
+
+        BookmarkTreeNode rootNode = (BookmarkTreeNode) model.getRoot();
+        AbstractTreeNodeModel treeNodeModel = (AbstractTreeNodeModel) rootNode.getUserObject();
+        // 搜索状态不允许持久化
+        if (treeNodeModel == null || treeNodeModel.isSearchView()) {
+            showWarningMessages();
+            return true;
+        }
+
         return false;
+    }
+
+    private void showWarningMessages() {
+        BookmarkNoticeUtil.warningMessages(openProject, "搜索状态下不允许修改书签树");
     }
 }

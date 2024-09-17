@@ -20,7 +20,7 @@ class StartedListener : ProjectActivity {
         // 初始化服务上下文
         ServiceContext(project)
         // 插件启动通知
-        startNotice(project)
+        // startNotice(project)
         // 启动定时备份任务
         ScheduledService.getInstance(project).initScheduledService()
     }

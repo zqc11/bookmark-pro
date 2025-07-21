@@ -2,9 +2,9 @@
 <idea-plugin require-restart="true">
     <id>org.bookmark.pro.id</id>
     <name>BookmarkPro</name>
-    <version>232-243.03.03</version>
+    <version>232-252</version>
     <vendor email="xingrenfan@hotmail.com" url="https://github.com/xingrenfan/bookmark-pro">XingRenFan</vendor>
-    <idea-version since-build="232" until-build="243.*"/>
+    <idea-version since-build="232" until-build="252.*"/>
 
     <description><![CDATA[
       <p>An idea plug-in that helps us take notes when reading the source code</p>
